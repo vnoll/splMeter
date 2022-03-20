@@ -1,0 +1,1 @@
+add_library(PortAudio STATIC libportaudio.a)

@@ -1,5 +1,7 @@
 #include <iostream>
 #include <SPLConfig.h>
+#include <portaudio.h>
+
 
 int main(int argv, char* argc[]) {
     
