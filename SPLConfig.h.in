@@ -1,0 +1,4 @@
+#define SoundPressureLevel_VERSION_MAJOR @SoundPressureLevel_VERSION_MAJOR@
+#define SoundPressureLevel_VERSION_MINOR @SoundPressureLevel_VERSION_MINOR@
+#define SoundPressureLevel_VERSION_PATCH @SoundPressureLevel_VERSION_PATCH@
+
