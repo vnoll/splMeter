@@ -1,0 +1,7 @@
+### Patch: 0.0.1 ###
+
+Repository initialization, basic file structure added.
+
+### Patch: 0.0.2 ###
+
+PThreads and ALSA libraries included, project is ready for development.
