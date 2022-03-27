@@ -3,8 +3,8 @@
 
 #define SAMPLE_RATE  (44100)
 #define FRAMES_PER_BUFFER (512)
-#define NUM_SECONDS     (5)
-#define NUM_CHANNELS    (2)
+#define NUM_SECONDS     (1)
+#define NUM_CHANNELS    (32)
 
 /* #define DITHER_FLAG     (paDitherOff) */
 #define DITHER_FLAG     (0)
@@ -47,8 +47,9 @@ paTestData;
 ** It may be called at interrupt level on some machines so don't do anything
 ** that could mess up the system like calling malloc() or free().
 */
-static int recordCallback( const void *inputBuffer, void *outputBuffer,
-                           unsigned long framesPerBuffer,
-                           const PaStreamCallbackTimeInfo* timeInfo,
-                           PaStreamCallbackFlags statusFlags,
-                           void *userData );
+int recordCallback(  const void *inputBuffer, 
+                            void *outputBuffer,
+                            unsigned long framesPerBuffer,
+                            const PaStreamCallbackTimeInfo* timeInfo,
+                            PaStreamCallbackFlags statusFlags,
+                            void *userData );
