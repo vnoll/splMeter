@@ -8,7 +8,7 @@ add_compile_options(-pthread)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# add the executable
+# add the source files
 file(GLOB SRC_FILES
 	"src/*.cpp"
     "src/*.c"
@@ -21,6 +21,7 @@ file(GLOB LIB_FILES
 
 find_package(Threads REQUIRED)
 find_package(ALSA REQUIRED)
+
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME} ${LIB_FILES} Threads::Threads ${ALSA_LIBRARIES})
