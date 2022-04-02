@@ -5,7 +5,7 @@ project(SoundPressureLevel VERSION 0.0.2)
 configure_file(SPLConfig.h.in SPLConfig.h)
 add_compile_options(-pthread)
 # specify the C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # add the source files
@@ -24,7 +24,10 @@ find_package(ALSA REQUIRED)
 
 # KFR: ARM builds require NEON supports - add -march=native for native build
 add_compile_options(-march=native)
-
+add_compile_options(-lm)
+add_compile_options(-v)
+add_link_options(-lm)
+add_link_options(-lstdc++)
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME} ${LIB_FILES} Threads::Threads ${ALSA_LIBRARIES})
 
