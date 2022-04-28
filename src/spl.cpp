@@ -57,7 +57,7 @@ int record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
             std::cout << "cBuf: " << cBuf[i] << std::endl;
 
         } */
-
+        // TODO: add time averaging
         recordData = false;
         auto formattedTime = std::chrono::system_clock::to_time_t(currentTime); // convert it to time_t type (loses some precision)
         // std::cout << std::ctime(&formattedTime) << std::endl; // print it formatted
@@ -96,6 +96,7 @@ int main()
     unsigned int bufferSize = 256;
     RtAudio *audio = 0;
 
+    // TODO: clean up this mess
     try {
         audio = new RtAudio();
     }

@@ -28,7 +28,7 @@ add_compile_options(-lm)
 add_compile_options(-v)
 add_link_options(-lm)
 add_link_options(-lstdc++)
-add_executable(${PROJECT_NAME} ${SRC_FILES})
+add_executable(${PROJECT_NAME} ${SRC_FILES} src/lowpass.cpp inc/lowpass.h)
 target_link_libraries(${PROJECT_NAME} ${LIB_FILES} Threads::Threads ${ALSA_LIBRARIES})
 
 include_directories(${PROJECT_NAME} PUBLIC 

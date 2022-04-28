@@ -3769,7 +3769,7 @@ static void sampleRateChanged( ASIOSampleRate sRate )
 
   RtApi *object = (RtApi *) asioCallbackInfo->object;
   if ( object->stopStream() ) {
-    std::cerr << "\nRtApiAsio: sampleRateChanged() error (" << /*TODO object->errorText_ <<*/ ")!\n" << std::endl;
+    std::cerr << "\nRtApiAsio: sampleRateChanged() error (" << ")!\n" << std::endl;
     return;
   }
 
@@ -4976,8 +4976,7 @@ bool RtApiWasapi::probeDeviceOpen( unsigned int device, StreamMode mode, unsigne
   else
     stream_.callbackInfo.priority = 0;
 
-  ///! TODO: RTAUDIO_MINIMIZE_LATENCY // Provide stream buffers directly to callback
-  ///! TODO: RTAUDIO_HOG_DEVICE       // Exclusive mode
+
 
   methodResult = SUCCESS;
 
