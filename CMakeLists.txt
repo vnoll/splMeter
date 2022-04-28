@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # set the project name
-project(SoundPressureLevel VERSION 0.0.2)
+project(SoundPressureLevel VERSION 0.1.0)
 configure_file(SPLConfig.h.in SPLConfig.h)
 add_compile_options(-pthread)
 # specify the C++ standard

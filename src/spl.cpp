@@ -1,11 +1,12 @@
 // audioprobe.cpp
 #include <iostream>
-#include "RtAudio.h"
-#include "all.hpp"
 #include <cstdlib>
 #include <chrono>
 #include <iterator>
 #include <algorithm>
+#include "RtAudio.h"
+#include "all.hpp"
+#include "lowpass.h"
 
 #define __LINUX_ALSA__
 #define __OS_LINUX__
@@ -22,15 +23,15 @@ float rmsValue(int arr[], int n)
     int square = 0;
     float mean = 0.0, root = 0.0;
 
-    // Calculate square.
+    // calculate square
     for (int i = 0; i < n; i++) {
         square += pow(arr[i], 2);
     }
 
-    // Calculate Mean.
+    // calculate mean.
     mean = (square / (float)(n));
 
-    // Calculate Root.
+    // calculate root.
     root = sqrt(mean);
 
     return root;
@@ -45,19 +46,41 @@ int record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
         memcpy(aBuf, iBuf, 256*sizeof(int32_t));
         int32_t cBuf[256];
         memcpy(cBuf, iBuf, 256*sizeof(int32_t));
+        int32_t aFBuf[256];
+        int32_t aSBuf[256];
+        int32_t cFBuf[256];
+        int32_t cSBuf[256];
+
+        // TODO: this has to be wrapped into some more elegant data structure
 
         float rmsRaw = rmsValue(iBuf, 256);
         std::cout << "RMS of raw signal [10 factor]: " << 10*log10(rmsRaw) << std::endl;
 
-        /* for(int i = 0; i < 256; i++) {
+        for(int i = 0; i < 256; i++) {
             std::cout << "iBuf: " << iBuf[i] << std::endl;
             aBuf[i] = kfr::aweighting(*iBuf);
-            cBuf[i] = kfr::cweighting(iBuf[i]);
+            cBuf[i] = kfr::cweighting(*iBuf);
             std::cout << "aBuf: " << aBuf[i] << std::endl;
             std::cout << "cBuf: " << cBuf[i] << std::endl;
-
-        } */
+        }
         // TODO: add time averaging
+        lowpass *lpSlow = new lowpass(44100, 1 , aBuf, aSBuf, 256);
+        lowpass *lpFast = new lowpass(44100, 0.125, aBuf, aFBuf, 256);
+
+        // apply time averaging filter (fast and slow) for A weighted signal
+        lpSlow->applyFilter();
+        lpFast->applyFilter();
+
+        // set appropriate inputs and outputs for C weighted signal
+        lpSlow->setInput(cBuf);
+        lpSlow->setOutput(cSBuf);
+        lpFast->setInput(cBuf);
+        lpFast->setOutput(cFBuf);
+
+        // apply time averaging filter (fast and slow) for C weighted signal
+        lpSlow->applyFilter();
+        lpFast->applyFilter();
+        
         recordData = false;
         auto formattedTime = std::chrono::system_clock::to_time_t(currentTime); // convert it to time_t type (loses some precision)
         // std::cout << std::ctime(&formattedTime) << std::endl; // print it formatted
