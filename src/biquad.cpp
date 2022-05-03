@@ -6,3 +6,8 @@ double Biquad::filter(double in) {
     z2 = b2 * in - a2 * out;
     return out;
 }
+
+void Biquad::resetZ() {
+    this->z1 = 0;
+    this->z2 = 0;
+}

@@ -14,7 +14,7 @@
 #define A_WEIGHT_2_A2 1.00016424
 #define A_WEIGHT_2_B0 1
 #define A_WEIGHT_2_B1 -1.89386673
-#define A_WEIGHT_2_B2 0.99462281
+#define A_WEIGHT_2_B2 0.89515653
 
 // third IIR:
 #define A_WEIGHT_3_A0  1

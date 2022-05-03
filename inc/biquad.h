@@ -15,7 +15,7 @@ class Biquad {
      }
 
     double filter(double in) ;
-
+    void resetZ();
     private:
         double a0, a1, a2, b0, b1, b2;
         double z1, z2;

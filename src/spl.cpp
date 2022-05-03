@@ -69,12 +69,13 @@ int record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
             cBuf[i] = cWeight2->filter(cWeight1->filter(iBuf[i]));
         }
 
-        float rmsRaw = rmsValue(iBuf, 256);
-        std::cout << "RMS of raw signal [10 factor]: " << 10*log10(rmsRaw) << std::endl;
-        float rmsA = rmsValue(aBuf, 256);
-        std::cout << "RMS of A signal [10 factor]: " << 10*log10(rmsA) << std::endl;
-        float rmsC = rmsValue(cBuf, 256);
-        std::cout << "RMS of C signal [10 factor]: " << 10*log10(rmsC) << std::endl;
+        aWeight3->resetZ();
+        aWeight2->resetZ();
+        aWeight1->resetZ();
+
+        cWeight1->resetZ();
+        cWeight2->resetZ();
+
         // TODO: add time averaging
         lowpass *lpSlow = new lowpass(44100, 1 , aBuf, aSBuf, 256);
         lowpass *lpFast = new lowpass(44100, 0.125, aBuf, aFBuf, 256);
@@ -93,6 +94,25 @@ int record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
         lpSlow->applyFilter();
         lpFast->applyFilter();
         
+        float rmsRaw = rmsValue(iBuf, 256);
+        std::cout << "RMS of raw signal [10 factor]: " << 10*log10(rmsRaw) << std::endl;
+
+        float rmsA = rmsValue(aBuf, 256);
+        std::cout << "RMS of A signal [10 factor]: " << 10*log10(rmsA) << std::endl;
+        float rmsAF = rmsValue(aFBuf, 256);
+        std::cout << "RMS of A signal (fast) [10 factor]: " << 10*log10(rmsAF) << std::endl;
+        float rmsAS = rmsValue(aSBuf, 256);
+        std::cout << "RMS of A signal (slow) [10 factor]: " << 10*log10(rmsAS) << std::endl;
+
+        float rmsC = rmsValue(cBuf, 256);
+        std::cout << "RMS of C signal [10 factor]: " << 10*log10(rmsC) << std::endl;
+        float rmsCF = rmsValue(cFBuf, 256);
+        std::cout << "RMS of C signal (fast) [10 factor]: " << 10*log10(rmsCF) << std::endl;
+        float rmsCS = rmsValue(cSBuf, 256);
+        std::cout << "RMS of C signal (slow) [10 factor]: " << 10*log10(rmsCS) << std::endl;
+        std::cout << "########" << std::endl;
+
+
         recordData = false;
         auto formattedTime = std::chrono::system_clock::to_time_t(currentTime); // convert it to time_t type (loses some precision)
         // std::cout << std::ctime(&formattedTime) << std::endl; // print it formatted
