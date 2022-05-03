@@ -7,9 +7,11 @@
 #include "RtAudio.h"
 #include "all.hpp"
 #include "lowpass.h"
+#include <alsa/asoundlib.h>
 
 #define __LINUX_ALSA__
 #define __OS_LINUX__
+#define ALSA_PCM_NEW_HW_PARAMS_API
 using std::chrono::high_resolution_clock;
 using std::chrono::duration_cast;
 using std::chrono::duration;
@@ -18,9 +20,9 @@ using std::chrono::milliseconds;
 bool recordData = true;
 auto currentTime = std::chrono::system_clock::now();
 
-float rmsValue(int arr[], int n)
+float rmsValue(int32_t arr[], int n)
 {
-    int square = 0;
+    float square = 0;
     float mean = 0.0, root = 0.0;
 
     // calculate square
@@ -29,7 +31,7 @@ float rmsValue(int arr[], int n)
     }
 
     // calculate mean.
-    mean = (square / (float)(n));
+    mean = (square / n);
 
     // calculate root.
     root = sqrt(mean);
@@ -56,13 +58,16 @@ int record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
         float rmsRaw = rmsValue(iBuf, 256);
         std::cout << "RMS of raw signal [10 factor]: " << 10*log10(rmsRaw) << std::endl;
 
-        for(int i = 0; i < 256; i++) {
+       for(int i = 0; i < 256; i++) {
             std::cout << "iBuf: " << iBuf[i] << std::endl;
-            aBuf[i] = kfr::aweighting(*iBuf);
+            /*aBuf[i] = kfr::aweighting(*iBuf);
             cBuf[i] = kfr::cweighting(*iBuf);
             std::cout << "aBuf: " << aBuf[i] << std::endl;
-            std::cout << "cBuf: " << cBuf[i] << std::endl;
+            std::cout << "cBuf: " << cBuf[i] << std::endl; */
         }
+        std::cout << std::endl;
+        std::cout << "####" <<  std::endl;
+
         // TODO: add time averaging
         lowpass *lpSlow = new lowpass(44100, 1 , aBuf, aSBuf, 256);
         lowpass *lpFast = new lowpass(44100, 0.125, aBuf, aFBuf, 256);
@@ -92,33 +97,20 @@ int record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
     if(elapsed_time_ms > 1000) {
         recordData = true;
     }
-
-
-    /* if(status)
-        std::cout << "Stream overflow detected!" << std::endl;
-    std::cout << "######" << std::endl;
-    std::cout << "Input buffer contents: " << std::endl;
-    for(int i = 0; i < 256; i++) {
-        std::cout << "Index: " << i << " :" << iBuf[i] << std::endl;
-    }
-    std::cout << "######" << std::endl; */
-    /* auto t2 = high_resolution_clock::now();
-    auto ms_int = duration_cast<milliseconds>(t2 - t1);
-    std::cout << ms_int.count() << "ms\n"; */
     return 0;
 }
 
 int main()
-{
-    RtAudio::StreamParameters sParam;
+{ 
+     RtAudio::StreamParameters sParam;
     // TODO: un-hardcode the device id
     sParam.deviceId = 2;
     sParam.nChannels = 1;
-    sParam.firstChannel = 1;
-    unsigned int sampleRate = 44100;
+    sParam.firstChannel = 0;
+    unsigned int sampleRate = 48000;
     unsigned int bufferSize = 256;
     RtAudio *audio = 0;
-
+    
     // TODO: clean up this mess
     try {
         audio = new RtAudio();
@@ -127,10 +119,9 @@ int main()
         std::cout << error << std::endl;
         exit(EXIT_FAILURE);
     }
-
     try {
         audio->openStream(NULL, &sParam, RTAUDIO_SINT32,
-                          sampleRate, &bufferSize, &record);
+                          sampleRate, &bufferSize, &record, NULL);
         audio->startStream();
     }
     catch(RtAudioErrorType &error) {
@@ -156,9 +147,12 @@ int main()
 
     if(audio->isStreamOpen())  audio->closeStream();
 
-    return 0;
+    return 0; 
+}
+
     /*
     RtAudio audio;
+   
     // Determine the number of devices available
     unsigned int devices = audio.getDeviceCount();
     // Scan through devices for various capabilities
@@ -168,8 +162,10 @@ int main()
         if ( info.probed == true ) {
             // Print, for example, the maximum number of output channels for each device
             std::cout << "device = " << i;
+            std::cout << "name = " << info.name;
+            std::cout << "pref samp. rate = " << info.preferredSampleRate;
             std::cout << ": maximum output channels = " << info.outputChannels << "\n";
         }
     }
-    return 0; */
-}
+    return 0;  
+}*/

@@ -4,7 +4,7 @@
 
 #ifndef SPLMETER_LOWPASS_H
 #define SPLMETER_LOWPASS_H
-
+#include <stdint.h>
 
 class lowpass {
     private:

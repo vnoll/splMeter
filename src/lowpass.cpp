@@ -34,7 +34,7 @@ void lowpass::applyFilter() {
     // y[k] = 0 for all negative k
     this->outputBuffer[0] = 0 + this->alpha*(this->inputBuffer[0] - 0);
     for(counter; counter < this->sampleNum; counter++) {
-        this->outputBuffer[counter] = this->outputBuffer[counter-1] + this->alpha*(this->inputBuffer - this->outputBuffer[counter-1]);
+        this->outputBuffer[counter] = this->outputBuffer[counter-1] + this->alpha*(this->inputBuffer[counter] - this->outputBuffer[counter-1]);
     }
 }
 
