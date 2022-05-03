@@ -54,3 +54,8 @@ plt.ylabel('Magnitude [dB]')
 plt.title("C weighting")
 plt.grid()
 
+print("A WEIGHTING BIQUAD COEFFICIENTS:\n")
+print(Asos)
+print('\n')
+print("C WEIGHTING COEFFICIENTS:\n")
+print(Csos)
