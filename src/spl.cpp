@@ -7,6 +7,8 @@
 #include "RtAudio.h"
 #include "all.hpp"
 #include "lowpass.h"
+#include "biquad.h"
+#include "weightingCoefficients.h"
 #include <alsa/asoundlib.h>
 
 #define __LINUX_ALSA__
@@ -55,19 +57,24 @@ int record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
 
         // TODO: this has to be wrapped into some more elegant data structure
 
-        float rmsRaw = rmsValue(iBuf, 256);
-        std::cout << "RMS of raw signal [10 factor]: " << 10*log10(rmsRaw) << std::endl;
+        Biquad *aWeight1 = new  Biquad(A_WEIGHT_1_A0,  A_WEIGHT_1_A1,  A_WEIGHT_1_A2,  A_WEIGHT_1_B0,  A_WEIGHT_1_B1,  A_WEIGHT_1_B2);
+        Biquad *aWeight2 = new  Biquad(A_WEIGHT_2_A0,  A_WEIGHT_2_A1,  A_WEIGHT_2_A2,  A_WEIGHT_2_B0,  A_WEIGHT_2_B1,  A_WEIGHT_2_B2);
+        Biquad *aWeight3 = new  Biquad(A_WEIGHT_3_A0,  A_WEIGHT_3_A1,  A_WEIGHT_3_A2,  A_WEIGHT_3_B0,  A_WEIGHT_3_B1,  A_WEIGHT_3_B2);
+
+        Biquad *cWeight1 = new  Biquad(C_WEIGHT_1_A0,  C_WEIGHT_1_A1,  C_WEIGHT_1_A2,  C_WEIGHT_1_B0, C_WEIGHT_1_B1,  C_WEIGHT_1_B2);
+        Biquad *cWeight2 = new  Biquad(C_WEIGHT_2_A0,  C_WEIGHT_2_A1,  C_WEIGHT_2_A2,  C_WEIGHT_2_B0, C_WEIGHT_2_B1,  C_WEIGHT_2_B2);
 
        for(int i = 0; i < 256; i++) {
-            std::cout << "iBuf: " << iBuf[i] << std::endl;
-            /*aBuf[i] = kfr::aweighting(*iBuf);
-            cBuf[i] = kfr::cweighting(*iBuf);
-            std::cout << "aBuf: " << aBuf[i] << std::endl;
-            std::cout << "cBuf: " << cBuf[i] << std::endl; */
+            aBuf[i] = aWeight3->filter(aWeight2->filter(aWeight1->filter(iBuf[i])));
+            cBuf[i] = cWeight2->filter(cWeight1->filter(iBuf[i]));
         }
-        std::cout << std::endl;
-        std::cout << "####" <<  std::endl;
 
+        float rmsRaw = rmsValue(iBuf, 256);
+        std::cout << "RMS of raw signal [10 factor]: " << 10*log10(rmsRaw) << std::endl;
+        float rmsA = rmsValue(aBuf, 256);
+        std::cout << "RMS of A signal [10 factor]: " << 10*log10(rmsA) << std::endl;
+        float rmsC = rmsValue(cBuf, 256);
+        std::cout << "RMS of C signal [10 factor]: " << 10*log10(rmsC) << std::endl;
         // TODO: add time averaging
         lowpass *lpSlow = new lowpass(44100, 1 , aBuf, aSBuf, 256);
         lowpass *lpFast = new lowpass(44100, 0.125, aBuf, aFBuf, 256);
