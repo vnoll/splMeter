@@ -1,4 +1,3 @@
-// audioprobe.cpp
 #include <iostream>
 #include <cstdlib>
 #include <chrono>
@@ -27,15 +26,12 @@ float rmsValue(int32_t arr[], int n)
     float square = 0;
     float mean = 0.0, root = 0.0;
 
-    // calculate square
     for (int i = 0; i < n; i++) {
         square += pow(arr[i], 2);
     }
-
-    // calculate mean.
+    
     mean = (square / n);
-
-    // calculate root.
+    
     root = sqrt(mean);
 
     return root;
@@ -54,8 +50,6 @@ int record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
         int32_t aSBuf[256];
         int32_t cFBuf[256];
         int32_t cSBuf[256];
-
-        // TODO: this has to be wrapped into some more elegant data structure
 
         Biquad *aWeight1 = new  Biquad(A_WEIGHT_1_A0,  A_WEIGHT_1_A1,  A_WEIGHT_1_A2,  A_WEIGHT_1_B0,  A_WEIGHT_1_B1,  A_WEIGHT_1_B2);
         Biquad *aWeight2 = new  Biquad(A_WEIGHT_2_A0,  A_WEIGHT_2_A1,  A_WEIGHT_2_A2,  A_WEIGHT_2_B0,  A_WEIGHT_2_B1,  A_WEIGHT_2_B2);
@@ -76,7 +70,6 @@ int record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
         cWeight1->resetZ();
         cWeight2->resetZ();
 
-        // TODO: add time averaging
         lowpass *lpSlow = new lowpass(44100, 1 , aBuf, aSBuf, 256);
         lowpass *lpFast = new lowpass(44100, 0.125, aBuf, aFBuf, 256);
 
@@ -129,7 +122,7 @@ int record(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
 
 int main()
 { 
-     RtAudio::StreamParameters sParam;
+    RtAudio::StreamParameters sParam;
     // TODO: un-hardcode the device id
     sParam.deviceId = 2;
     sParam.nChannels = 1;
@@ -138,7 +131,6 @@ int main()
     unsigned int bufferSize = 256;
     RtAudio *audio = 0;
     
-    // TODO: clean up this mess
     try {
         audio = new RtAudio();
     }
@@ -176,23 +168,3 @@ int main()
 
     return 0; 
 }
-
-    /*
-    RtAudio audio;
-   
-    // Determine the number of devices available
-    unsigned int devices = audio.getDeviceCount();
-    // Scan through devices for various capabilities
-    RtAudio::DeviceInfo info;
-    for ( unsigned int i=0; i<devices; i++ ) {
-        info = audio.getDeviceInfo( i );
-        if ( info.probed == true ) {
-            // Print, for example, the maximum number of output channels for each device
-            std::cout << "device = " << i;
-            std::cout << "name = " << info.name;
-            std::cout << "pref samp. rate = " << info.preferredSampleRate;
-            std::cout << ": maximum output channels = " << info.outputChannels << "\n";
-        }
-    }
-    return 0;  
-}*/
